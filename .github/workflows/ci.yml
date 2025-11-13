@@ -88,21 +88,12 @@ jobs:
           username: json_key
           password: ${{ secrets.YC_REGISTRY_KEY }}
 
-      - name: Extract metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=latest
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
@@ -110,4 +101,5 @@ jobs:
 
       - name: Image pushed
         run: |
-          echo "Image pushed: ${{ steps.meta.outputs.tags }}"
+          echo "Image pushed to registry"
+
